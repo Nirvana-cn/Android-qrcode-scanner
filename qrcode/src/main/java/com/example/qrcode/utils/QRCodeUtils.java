@@ -75,8 +75,4 @@ public class QRCodeUtils {
         }
     }
 
-    public static Bitmap crop(Bitmap image, int left, int top, int width, int height) {
-        return Bitmap.createBitmap(image, left, top, width, height);
-    }
-
 }

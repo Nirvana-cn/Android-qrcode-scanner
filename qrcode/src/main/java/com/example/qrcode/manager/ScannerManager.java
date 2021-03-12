@@ -21,14 +21,18 @@ public class ScannerManager {
     }
 
     public void init(CameraStatusListener cameraStatusListener, QRCodeListener qrCodeListener) {
-        VideoStreamManager.getInstance().initVideoStream(cameraStatusListener);
-        QRCodeRecognition.getInstance().setListener(qrCodeListener);
+        VideoStreamManager.getInstance().registerListener(cameraStatusListener);
+        VideoStreamManager.getInstance().initVideoStream();
+
+        QRCodeRecognition.getInstance().registerListener(qrCodeListener);
     }
 
     // constraints = [left, top, width, height]
     public void init(CameraStatusListener cameraStatusListener, QRCodeListener qrCodeListener, int[] constraints) {
-        VideoStreamManager.getInstance().initVideoStream(cameraStatusListener);
-        QRCodeRecognition.getInstance().setListener(qrCodeListener);
+        VideoStreamManager.getInstance().registerListener(cameraStatusListener);
+        VideoStreamManager.getInstance().initVideoStream();
+
+        QRCodeRecognition.getInstance().registerListener(qrCodeListener);
         QRCodeRecognition.getInstance().setConstraints(constraints);
     }
 
@@ -38,5 +42,10 @@ public class ScannerManager {
 
     public void pause() {
         VideoStreamManager.getInstance().pauseVideoStream();
+    }
+
+    public void release() {
+        VideoStreamManager.getInstance().release();
+        QRCodeRecognition.getInstance().release();
     }
 }

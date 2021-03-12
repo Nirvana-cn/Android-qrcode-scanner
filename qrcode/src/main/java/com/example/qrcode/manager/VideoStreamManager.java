@@ -39,8 +39,7 @@ class VideoStreamManager {
         return mInstance;
     }
 
-    public void initVideoStream(CameraStatusListener listener) {
-        mListener = listener;
+    public void initVideoStream() {
         initLifecycleOwner();
         resumeVideoStream();
         openCamera(mLifecycleOwner);
@@ -53,6 +52,14 @@ class VideoStreamManager {
         mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_CREATE);
     }
 
+    public void registerListener(CameraStatusListener listener) {
+        mListener = listener;
+    }
+
+    public void unregisterListener() {
+        mListener = null;
+    }
+
     public void resumeVideoStream() {
         mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_START);
     }
@@ -62,6 +69,7 @@ class VideoStreamManager {
     }
 
     public void release() {
+        unregisterListener();
         mLifecycleRegistry.handleLifecycleEvent(Lifecycle.Event.ON_DESTROY);
     }
 
@@ -101,7 +109,7 @@ class VideoStreamManager {
 
 
     // 获取相机帧数据
-    private class PhotoAnalyzer implements ImageAnalysis.Analyzer {
+    private static class PhotoAnalyzer implements ImageAnalysis.Analyzer {
 
         @Override
         public void analyze(ImageProxy imageProxy, int rotationDegrees) {
@@ -112,7 +120,7 @@ class VideoStreamManager {
 
             Bitmap bitmapImage = ImageUtils.yuv420ToBitmap(image);
 
-            QRCodeRecognition.getInstance().recognizeQRCode(bitmapImage);
+            QRCodeRecognition.getInstance().recognizeQRCode(bitmapImage, rotationDegrees);
 
         }
     }

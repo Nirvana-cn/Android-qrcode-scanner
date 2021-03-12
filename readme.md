@@ -6,5 +6,12 @@
 - QRCodeRecognition类负责识别二维码内容
 - ScannerManager类是对外暴露的接口
 
+支持自定义任意识别区域。
+
 理论上来说`qrcode`模块只提供相机视频流和二维码识别功能，不提供上层交互界面。
+
+工程依赖：
+
+- CameraX
+- zxing
 
