@@ -77,6 +77,7 @@ class VideoStreamManager {
         // 1. preview
         PreviewConfig previewConfig = new PreviewConfig.Builder()
                 .setLensFacing(CameraX.LensFacing.BACK)
+                .setTargetAspectRatio(new Rational(3, 4))
                 .build();
 
         Preview preview = new Preview(previewConfig);

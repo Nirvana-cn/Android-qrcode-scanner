@@ -15,3 +15,12 @@
 - CameraX
 - zxing
 
+
+```
+PreviewConfig previewConfig = new PreviewConfig.Builder()
+                .setLensFacing(CameraX.LensFacing.BACK)
+                // 设置屏幕比例
+                .setTargetAspectRatio(new Rational(3, 4))
+                .build();
+```
+

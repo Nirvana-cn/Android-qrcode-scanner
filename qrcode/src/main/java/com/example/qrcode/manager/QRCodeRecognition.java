@@ -4,6 +4,7 @@ import android.graphics.Bitmap;
 import android.os.HandlerThread;
 
 import com.example.qrcode.listener.QRCodeListener;
+import com.example.qrcode.utils.BitmapUtils;
 import com.example.qrcode.utils.QRCodeUtils;
 
 import java.util.concurrent.Executors;
@@ -53,10 +54,11 @@ class QRCodeRecognition {
     public void recognizeQRCode(Bitmap origin, int rotationDegrees) {
         if (executor.getQueue().size() < 2) {
             executor.submit(() -> {
-                String result = QRCodeUtils.syncDecodeQRCode(origin);
+                Bitmap image = BitmapUtils.rotate(origin, rotationDegrees);
+                String result = QRCodeUtils.syncDecodeQRCode(image);
 
                 if (mListener != null) {
-                    mListener.onReceiveMessage(result, origin);
+                    mListener.onReceiveMessage(result, image);
                 }
             });
         }
