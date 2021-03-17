@@ -3,10 +3,12 @@ package com.example.qrcodescanner;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.Bitmap;
 import android.graphics.SurfaceTexture;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.TextureView;
 import android.widget.ImageView;
@@ -30,6 +32,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
         initView();
+        initScreenSize();
         initQRCodeScanner();
     }
 
@@ -37,6 +40,14 @@ public class MainActivity extends AppCompatActivity {
         preview = findViewById(R.id.container);
         imageView = findViewById(R.id.qrcode);
         imageView.setOnClickListener(view -> ScannerManager.getInstance().resume());
+    }
+
+    private void initScreenSize() {
+        DisplayMetrics outMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getRealMetrics(outMetrics);
+
+        int[] constraints = {100, 100, 300, 300};
+        ScannerManager.getInstance().setConstraints(constraints, outMetrics);
     }
 
     private void initQRCodeScanner() {
@@ -73,18 +84,22 @@ public class MainActivity extends AppCompatActivity {
             }
         };
 
-        QRCodeListener qrCodeListener = (message, image) -> {
-            Log.d(TAG, message);
-            ScannerManager.getInstance().pause();
-            mHandler.post(() -> {
-                imageView.setImageBitmap(image);
-            });
+        QRCodeListener qrCodeListener = new QRCodeListener() {
+            @Override
+            public void onReceiveMessage(String message) {
+                Log.d(TAG, message);
+                ScannerManager.getInstance().pause();
+            }
+
+            @Override
+            public void onReceiveImage(Bitmap image) {
+                mHandler.post(() -> {
+                    imageView.setImageBitmap(image);
+                });
+            }
         };
 
-        int[] constraints = {100, 100, 300, 300};
-
         ScannerManager.getInstance().init(cameraStatusListener, qrCodeListener);
-//        ScannerManager.getInstance().init(cameraStatusListener, qrCodeListener, constraints);
     }
 
     @Override

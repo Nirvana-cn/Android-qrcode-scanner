@@ -17,7 +17,7 @@ class QRCodeRecognition {
     private static QRCodeRecognition mInstance;
 
     private final ThreadPoolExecutor executor;
-    private int[] constraints;
+    private float[] constraints;
     private QRCodeListener mListener;
 
     private QRCodeRecognition() {
@@ -47,18 +47,31 @@ class QRCodeRecognition {
         unregisterListener();
     }
 
-    public void setConstraints(int[] constraints) {
+    public void setConstraints(float[] constraints) {
         this.constraints = constraints;
     }
 
     public void recognizeQRCode(Bitmap origin, int rotationDegrees) {
         if (executor.getQueue().size() < 2) {
             executor.submit(() -> {
+                String result;
                 Bitmap image = BitmapUtils.rotate(origin, rotationDegrees);
-                String result = QRCodeUtils.syncDecodeQRCode(image);
+                int width = image.getWidth();
+                int height = image.getHeight();
+                if (constraints != null) {
+                    int left = (int) (constraints[0] * width);
+                    int top = (int) (constraints[1] * height);
+                    int cropWidth = (int) (constraints[2] * width);
+                    int cropHeight = (int) (constraints[3] * width);
 
-                if (mListener != null) {
-                    mListener.onReceiveMessage(result, image);
+                    image = BitmapUtils.crop(image, left, top, cropWidth, cropHeight);
+                }
+
+                result = QRCodeUtils.syncDecodeQRCode(image);
+
+                if (mListener != null && result != null) {
+                    mListener.onReceiveMessage(result);
+                    mListener.onReceiveImage(image);
                 }
             });
         }
